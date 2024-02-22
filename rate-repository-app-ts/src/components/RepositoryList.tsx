@@ -15,7 +15,6 @@ const RepositoryList = () => {
   const { repositories } = useRepositories();
 
   // Get the nodes from the edges array
-  console.log(repositories);
   const repositoryNodes = repositories
     ? repositories.edges.map((edge) => edge.node)
     : [];
