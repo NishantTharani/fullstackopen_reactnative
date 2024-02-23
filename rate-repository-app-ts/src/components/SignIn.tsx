@@ -4,6 +4,8 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 
 import { Text } from './Text';
+import useSignIn from '../hooks/useSignIn';
+import { AuthenticateInput } from '../types';
 
 const validationSchema = yup.object().shape({
   username: yup.string().required('Username is required'),
@@ -44,8 +46,25 @@ const SignIn = () => {
     resolver: yupResolver(validationSchema),
   });
 
-  const onSubmit = handleSubmit((data) => {
+  const { signIn, result } = useSignIn();
+
+  const onSubmit = handleSubmit(async (data) => {
     console.log(data);
+
+    const { username, password } = data;
+    const authenticateInput: AuthenticateInput = {
+      credentials: {
+        username,
+        password,
+      },
+    };
+
+    try {
+      const { data } = await signIn(authenticateInput);
+      console.log(data);
+    } catch (e) {
+      console.log(e);
+    }
   });
 
   return (

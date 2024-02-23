@@ -18,3 +18,16 @@ export interface APIRepository {
     },
   ];
 }
+
+export interface AuthenticateInput {
+  credentials: {
+    username: string;
+    password: string;
+  };
+}
+
+export interface AuthenticateResponse {
+  authenticate: {
+    accessToken: string;
+  };
+}
