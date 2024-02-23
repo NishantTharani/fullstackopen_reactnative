@@ -31,3 +31,10 @@ export interface AuthenticateResponse {
     accessToken: string;
   };
 }
+
+export interface MeResponse {
+  me: {
+    id: string;
+    username: string;
+  };
+}

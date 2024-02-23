@@ -2,10 +2,13 @@ import { useForm, Controller } from 'react-hook-form';
 import { TextInput, View, Button, StyleSheet } from 'react-native';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
+import { useNavigate } from 'react-router-native';
 
 import { Text } from './Text';
 import useSignIn from '../hooks/useSignIn';
 import { AuthenticateInput } from '../types';
+import useAuthStorage from '../hooks/useAuthStorage';
+import { useApolloClient } from '@apollo/client';
 
 const validationSchema = yup.object().shape({
   username: yup.string().required('Username is required'),
@@ -38,6 +41,7 @@ interface SignInFormValues {
 }
 
 const SignIn = () => {
+  const apolloClient = useApolloClient();
   const {
     control,
     handleSubmit,
@@ -45,8 +49,10 @@ const SignIn = () => {
   } = useForm<SignInFormValues>({
     resolver: yupResolver(validationSchema),
   });
+  const navigate = useNavigate();
 
   const { signIn, result } = useSignIn();
+  const authStorage = useAuthStorage();
 
   const onSubmit = handleSubmit(async (data) => {
     console.log(data);
@@ -61,7 +67,15 @@ const SignIn = () => {
 
     try {
       const { data } = await signIn(authenticateInput);
+
+      if (!data) {
+        throw new Error('No data returned from sign in');
+      }
+
       console.log(data);
+      await authStorage.setAccessToken(data?.authenticate.accessToken);
+      apolloClient.resetStore();
+      navigate('/');
     } catch (e) {
       console.log(e);
     }
