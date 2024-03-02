@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-native';
 
 import { Text } from './Text';
 import useSignIn from '../hooks/useSignIn';
-import { AuthenticateInput } from '../types';
+import { AuthenticateInput, Credentials } from '../types';
 import useAuthStorage from '../hooks/useAuthStorage';
 import { useApolloClient } from '@apollo/client';
 
@@ -40,8 +40,11 @@ interface SignInFormValues {
   password: string;
 }
 
-const SignIn = () => {
-  const apolloClient = useApolloClient();
+type SignInFormProps = {
+  onSubmit: (data: Credentials) => void;
+};
+
+export const SignInForm = ({ onSubmit }: SignInFormProps) => {
   const {
     control,
     handleSubmit,
@@ -49,37 +52,8 @@ const SignIn = () => {
   } = useForm<SignInFormValues>({
     resolver: yupResolver(validationSchema),
   });
-  const navigate = useNavigate();
 
-  const { signIn, result } = useSignIn();
-  const authStorage = useAuthStorage();
-
-  const onSubmit = handleSubmit(async (data) => {
-    console.log(data);
-
-    const { username, password } = data;
-    const authenticateInput: AuthenticateInput = {
-      credentials: {
-        username,
-        password,
-      },
-    };
-
-    try {
-      const { data } = await signIn(authenticateInput);
-
-      if (!data) {
-        throw new Error('No data returned from sign in');
-      }
-
-      console.log(data);
-      await authStorage.setAccessToken(data?.authenticate.accessToken);
-      apolloClient.resetStore();
-      navigate('/');
-    } catch (e) {
-      console.log(e);
-    }
-  });
+  const wrappedOnSubmit = handleSubmit(onSubmit);
 
   return (
     <View style={styles.signinFormContainer}>
@@ -116,9 +90,46 @@ const SignIn = () => {
           </>
         )}
       />
-      <Button title="Sign in" onPress={onSubmit} />
+      <Button title="Sign In" onPress={wrappedOnSubmit} />
     </View>
   );
+};
+
+const SignIn = () => {
+  const apolloClient = useApolloClient();
+  const navigate = useNavigate();
+
+  const { signIn, result } = useSignIn();
+  const authStorage = useAuthStorage();
+
+  const onSubmit = async (data: Credentials) => {
+    console.log(data);
+
+    const { username, password } = data;
+    const authenticateInput: AuthenticateInput = {
+      credentials: {
+        username,
+        password,
+      },
+    };
+
+    try {
+      const { data } = await signIn(authenticateInput);
+
+      if (!data) {
+        throw new Error('No data returned from sign in');
+      }
+
+      console.log(data);
+      await authStorage.setAccessToken(data?.authenticate.accessToken);
+      apolloClient.resetStore();
+      navigate('/');
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  return SignInForm({ onSubmit });
 };
 
 export default SignIn;

@@ -51,21 +51,29 @@ const roundCounts = (count: number) => {
 
 const RepositoryItem = ({ repository }: RepositoryItemProps) => {
   return (
-    <View style={styles.repositoryItemContainer}>
-      <RepositoryHeaderRow
-        avatarUrl={repository.ownerAvatarUrl}
-        fullName={repository.fullName}
-        description={repository.description}
-        language={repository.language}
-      />
-      <View style={styles.metricsRowContainer}>
-        <RepositoryMetricItem
-          label="Stars"
-          value={repository.stargazersCount}
+    <View testID="repositoryItem">
+      <View style={styles.repositoryItemContainer}>
+        <RepositoryHeaderRow
+          avatarUrl={repository.ownerAvatarUrl}
+          fullName={repository.fullName}
+          description={repository.description}
+          language={repository.language}
         />
-        <RepositoryMetricItem label="Forks" value={repository.forksCount} />
-        <RepositoryMetricItem label="Reviews" value={repository.reviewCount} />
-        <RepositoryMetricItem label="Rating" value={repository.ratingAverage} />
+        <View style={styles.metricsRowContainer}>
+          <RepositoryMetricItem
+            label="Stars"
+            value={repository.stargazersCount}
+          />
+          <RepositoryMetricItem label="Forks" value={repository.forksCount} />
+          <RepositoryMetricItem
+            label="Reviews"
+            value={repository.reviewCount}
+          />
+          <RepositoryMetricItem
+            label="Rating"
+            value={repository.ratingAverage}
+          />
+        </View>
       </View>
     </View>
   );

@@ -11,19 +11,19 @@ export interface Repository {
 }
 
 export interface APIRepository {
-  edges: [
-    {
-      node: Repository;
-      current: string;
-    },
-  ];
+  edges: {
+    node: Repository;
+    cursor: string;
+  }[];
+}
+
+export interface Credentials {
+  username: string;
+  password: string;
 }
 
 export interface AuthenticateInput {
-  credentials: {
-    username: string;
-    password: string;
-  };
+  credentials: Credentials;
 }
 
 export interface AuthenticateResponse {
